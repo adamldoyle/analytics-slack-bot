@@ -1,0 +1,15 @@
+{
+  "name": "analytics-slack-bot",
+  "version": "1.0.0",
+  "description": "Slackbot for dealing with analytics requests",
+  "scripts": {
+    "test": "serverless-bundle test"
+  },
+  "author": "Adam Doyle <adamldoyle@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "aws-sdk": "^2.747.0",
+    "serverless-bundle": "^3.0.0",
+    "serverless-dotenv-plugin": "^3.0.0"
+  }
+}

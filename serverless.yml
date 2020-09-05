@@ -1,0 +1,28 @@
+service: analytics-slack-bot
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle
+  - serverless-dotenv-plugin
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+
+resources:
+  - ${file(resources/api-gateway-errors.yml)}
+
+functions:
+  message:
+    handler: message.main
+    events:
+      - http:
+          path: messages
+          method: post
