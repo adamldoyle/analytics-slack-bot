@@ -5,7 +5,10 @@ export const main = handler(async (event, context) => {
   const payload = JSON.parse(event.body);
 
   if (payload.type === 'debug') {
-    return { ...payload, token: process.env.SLACK_TOKEN };
+    await SlackClient.chat.postMessage({
+      text: 'This is a debug message',
+      channel: payload.channel,
+    });
   }
   if (payload.type === 'url_verification') {
     return { challenge: payload.challenge };
@@ -16,7 +19,7 @@ export const main = handler(async (event, context) => {
   ) {
     const text = payload.event.text;
     if (text.includes('what is my global message rank')) {
-      SlackClient.chat.postMessage({
+      await SlackClient.chat.postMessage({
         text: `<@${payload.event.user}>: your global message rank is 2`,
         channel: payload.event.channel,
       });
