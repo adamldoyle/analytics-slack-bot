@@ -13,6 +13,7 @@
     "serverless-dotenv-plugin": "^3.0.0"
   },
   "dependencies": {
+    "@slack/events-api": "^2.3.4",
     "@slack/web-api": "^5.11.0"
   }
 }

@@ -1,5 +1,5 @@
 import handler from './libs/handler-lib';
-import SlackClient from './libs/slack-lib';
+import SlackClient, { verifyRequest } from './libs/slack-lib';
 
 export const main = handler(async (event, context) => {
   const payload = JSON.parse(event.body);
@@ -9,6 +9,10 @@ export const main = handler(async (event, context) => {
       text: 'This is a debug message',
       channel: payload.channel,
     });
+  }
+
+  if (!verifyRequest(event)) {
+    throw new Error('Invalid request');
   }
   if (payload.type === 'url_verification') {
     return { challenge: payload.challenge };
