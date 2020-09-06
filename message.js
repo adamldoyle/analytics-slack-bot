@@ -28,7 +28,7 @@ export const main = handler(async (event, context) => {
           (rank) =>
             `${rank.rank}: ${rank.userName} (${rank.messageCount} messages)`,
         )
-        .join('\\n');
+        .join('\n');
       await SlackClient.chat.postMessage({
         text: `Channel ranks:\n\n${rankOutput}`,
         channel: payload.event.channel,
