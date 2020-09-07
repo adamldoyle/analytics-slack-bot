@@ -19,7 +19,7 @@ export function verifyRequest(event) {
 }
 
 export async function getChannelMap() {
-  const response = await SlackClient.conversations.list();
+  const response = await SlackClient.users.conversations();
   return response.channels.reduce((acc, channel) => {
     acc[channel.id] = channel.name;
     return acc;
