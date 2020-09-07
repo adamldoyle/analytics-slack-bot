@@ -20,7 +20,7 @@ export async function getChannelStats(channelId) {
   return channelCounts;
 }
 
-export function buildChannelRanks(stats, users) {
+export function buildStatRanks(stats, users) {
   return Object.keys(stats)
     .map((userId) => ({
       userId,

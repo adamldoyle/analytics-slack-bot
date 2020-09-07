@@ -1,5 +1,5 @@
 import SlackClient, { getUserMap } from '../libs/slack';
-import { getChannelStats, buildChannelRanks } from '../libs/ranks';
+import { getChannelStats, buildStatRanks } from '../libs/ranks';
 import handleChannelRanks from './channelRanks';
 
 jest.mock('../libs/slack');
@@ -20,14 +20,14 @@ describe('handleChannelRanks', () => {
     const mockChannelStats = { 1: 3 };
     getUserMap.mockResolvedValue(mockUserMap);
     getChannelStats.mockResolvedValue(mockChannelStats);
-    buildChannelRanks.mockReturnValue([
+    buildStatRanks.mockReturnValue([
       { rank: 1, userName: 'user1', messageCount: 3 },
       { rank: 2, userName: 'user2', messageCount: 2 },
     ]);
     const response = await handleChannelRanks(payload);
     expect(getUserMap).toBeCalled();
     expect(getChannelStats).toBeCalledWith('testChannel');
-    expect(buildChannelRanks).toBeCalledWith(mockChannelStats, mockUserMap);
+    expect(buildStatRanks).toBeCalledWith(mockChannelStats, mockUserMap);
     expect(SlackClient.chat.postMessage).toBeCalledWith({
       channel: 'testChannel',
       text: 'Channel ranks:\n\n1: user1 (3 messages)\n2: user2 (2 messages)',

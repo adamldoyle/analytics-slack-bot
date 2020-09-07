@@ -8,7 +8,6 @@
     "prettify": "prettier --write ."
   },
   "pre-commit": [
-    "prettier",
     "test"
   ],
   "author": "Adam Doyle <adamldoyle@gmail.com>",

@@ -1,5 +1,5 @@
 import SlackClient from './slack';
-import { getChannelStats, buildChannelRanks } from './ranks';
+import { getChannelStats, buildStatRanks } from './ranks';
 
 jest.mock('./slack');
 
@@ -17,7 +17,7 @@ describe('ranks', () => {
     });
   });
 
-  describe('buildChannelRanks', () => {
+  describe('buildStatRanks', () => {
     it('sorts and buils ranks', () => {
       const stats = { user1: 2, user2: 1, user3: 3 };
       const users = {
@@ -25,7 +25,7 @@ describe('ranks', () => {
         user2: 'testUser2',
         user3: 'testUser3',
       };
-      const result = buildChannelRanks(stats, users);
+      const result = buildStatRanks(stats, users);
       expect(result).toEqual([
         { userId: 'user3', userName: 'testUser3', messageCount: 3, rank: 1 },
         { userId: 'user1', userName: 'testUser1', messageCount: 2, rank: 2 },
