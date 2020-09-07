@@ -22,8 +22,11 @@ export default async function handleGlobalRanks(payload) {
         `${rank.rank}: ${rank.userName} (${rank.messageCount} messages)`,
     )
     .join('\n');
+  const channelOutput = Object.keys(channelMap)
+    .map((channelId) => channelMap[channelId])
+    .join(', ');
   await SlackClient.chat.postMessage({
-    text: `Global ranks:\n\n${rankOutput}`,
+    text: `Global ranks:\n\n${rankOutput}\n\nChannels monitored: ${channelOutput}`,
     channel: payload.event.channel,
   });
   return true;

@@ -45,7 +45,7 @@ describe('handleGlobalRanks', () => {
     expect(SlackClient.chat.postMessage).toBeCalledWith({
       channel: 'testChannel',
       text:
-        'Global ranks:\n\n1: user1 (5 messages)\n2: user3 (2 messages)\n3: user2 (1 messages)',
+        'Global ranks:\n\n1: user1 (5 messages)\n2: user3 (2 messages)\n3: user2 (1 messages)\n\nChannels monitored: testChannel1, testChannel2',
     });
     expect(response).toBeTruthy();
   });
