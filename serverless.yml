@@ -10,11 +10,21 @@ plugins:
 custom:
   stage: ${opt:stage, self:provider.stage}
 
+lambdaPolicyXRay:
+  Effect: Allow
+  Action:
+    - xray:PutTraceSegments
+    - xray:PutTelemetryRecords
+  Resource: '*'
+
 provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+  tracing:
+    apiGateway: true
+    lambda: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
