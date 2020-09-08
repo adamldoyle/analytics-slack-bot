@@ -8,7 +8,7 @@ export async function getChannelStats(channelId) {
     messages = messages.concat(response.messages);
   }
   const channelCounts = messages.reduce((acc, message) => {
-    if (message && message.user && !message.thread_ts) {
+    if (message && message.user && message.subtype !== 'thread_broadcast') {
       if (!acc[message.user]) {
         acc[message.user] = 0;
       }
