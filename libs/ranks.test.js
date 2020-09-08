@@ -25,6 +25,16 @@ describe('ranks', () => {
       const result = await getChannelStats('testChannelId');
       expect(result).toEqual({ user1: 1 });
     });
+    
+    it('threaded messages are skipped', async () => {
+      SlackClient.paginate = jest.fn().mockImplementation(function* () {
+        yield {
+          messages: [{ user: 'user2', subtype: 'thread_broadcast' }, { user: 'user1' }, { user: 'user1', subtype: 'thread_broadcast' }],
+        };
+      });
+      const result = await getChannelStats('testChannelId');
+      expect(result).toEqual({ user1: 1 });
+    });
   });
 
   describe('buildStatRanks', () => {
