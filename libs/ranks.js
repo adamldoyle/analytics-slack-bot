@@ -33,7 +33,7 @@ export function buildStatRanks(stats, users) {
         ? -1
         : a.messageCount < b.messageCount
         ? 1
-        : 0,
+        : a.userName.localeCompare(b.userName),
     )
     .map((user, idx) => ({
       ...user,
