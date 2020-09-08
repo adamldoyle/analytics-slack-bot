@@ -1,5 +1,6 @@
 import channelRanksHandler from './channelRanks';
 import globalRanksHandler from './globalRanks';
+import { handleSource, handleHelp } from './help';
 
 export default async function handleEvent(payload) {
   if (payload.event.type === 'app_mention') {
@@ -9,6 +10,12 @@ export default async function handleEvent(payload) {
     }
     if (text.includes('global ranks')) {
       return globalRanksHandler(payload);
+    }
+    if (text.includes('source')) {
+      return handleSource(payload);
+    }
+    if (text.includes('help')) {
+      return handleHelp(payload);
     }
   }
 }
