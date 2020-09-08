@@ -1,7 +1,7 @@
 import * as debug from './debug';
 
 export default function handler(lambda) {
-  return function (event, context) {
+  return async (event, context) => {
     debug.init(event, context);
     return Promise.resolve()
       .then(() => lambda(event, context))

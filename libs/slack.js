@@ -19,7 +19,8 @@ export function verifyRequest(event) {
 }
 
 export async function getChannelMap() {
-  const response = await SlackClient.users.conversations();
+  // Using WebClient explicitly here instead of SlackToken to aid with testing
+  const response = await new WebClient(token).users.conversations();
   return response.channels.reduce((acc, channel) => {
     acc[channel.id] = channel.name;
     return acc;
@@ -27,7 +28,7 @@ export async function getChannelMap() {
 }
 
 export async function getUserMap() {
-  const response = await SlackClient.users.list();
+  const response = await new WebClient(token).users.list();
   return response.members.reduce((acc, user) => {
     acc[user.id] = user.name;
     return acc;
