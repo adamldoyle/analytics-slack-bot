@@ -31,21 +31,25 @@ describe('debug', () => {
     debug('two', { log: 2 });
     flush(error);
 
+    // eslint-disable-next-line no-console
     expect(console.debug).toHaveBeenNthCalledWith(
       1,
       expect.anything(),
       format.apply(null, ['API event', event]),
     );
+    // eslint-disable-next-line no-console
     expect(console.debug).toHaveBeenNthCalledWith(
       2,
       expect.anything(),
       format.apply(null, ['one', { log: 1 }]),
     );
+    // eslint-disable-next-line no-console
     expect(console.debug).toHaveBeenNthCalledWith(
       3,
       expect.anything(),
       format.apply(null, ['two', { log: 2 }]),
     );
+    // eslint-disable-next-line no-console
     expect(console.error).toBeCalledWith(error);
   });
 });
