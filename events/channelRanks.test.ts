@@ -18,9 +18,9 @@ describe('handleChannelRanks', () => {
     };
     const mockUserMap = { 1: 'user1' };
     const mockChannelStats = { 1: 3 };
-    getUserMap.mockResolvedValue(mockUserMap);
-    getChannelStats.mockResolvedValue(mockChannelStats);
-    buildStatRanks.mockReturnValue([
+    (getUserMap as jest.Mock).mockResolvedValue(mockUserMap);
+    (getChannelStats as jest.Mock).mockResolvedValue(mockChannelStats);
+    (buildStatRanks as jest.Mock).mockReturnValue([
       { rank: 1, userName: 'user1', messageCount: 3 },
       { rank: 2, userName: 'user2', messageCount: 2 },
     ]);

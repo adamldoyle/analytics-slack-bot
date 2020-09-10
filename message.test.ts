@@ -9,7 +9,7 @@ describe('message handler', () => {
   it('verifies requests', async () => {
     const event = { body: null };
     const context = { context: true };
-    verifyRequest.mockReturnValue(false);
+    (verifyRequest as jest.Mock).mockReturnValue(false);
     try {
       await main(event, context);
       expect(false).toBeTruthy();
@@ -27,7 +27,7 @@ describe('message handler', () => {
       }),
     };
     const context = { context: true };
-    verifyRequest.mockReturnValue(true);
+    (verifyRequest as jest.Mock).mockReturnValue(true);
     const response = await main(event, context);
     expect(response.statusCode).toEqual(200);
     expect(JSON.parse(response.body)).toEqual({ challenge: 'testChallenge' });
@@ -40,8 +40,8 @@ describe('message handler', () => {
       }),
     };
     const context = { context: true };
-    verifyRequest.mockReturnValue(true);
-    eventHandler.mockResolvedValue({ event: true });
+    (verifyRequest as jest.Mock).mockReturnValue(true);
+    (eventHandler as jest.Mock).mockResolvedValue({ event: true });
     const response = await main(event, context);
     expect(response.statusCode).toEqual(200);
     expect(JSON.parse(response.body)).toEqual({ event: true });
@@ -54,7 +54,7 @@ describe('message handler', () => {
       }),
     };
     const context = { context: true };
-    verifyRequest.mockReturnValue(true);
+    (verifyRequest as jest.Mock).mockReturnValue(true);
     const response = await main(event, context);
     expect(response.statusCode).toEqual(200);
     expect(JSON.parse(response.body)).toEqual(true);

@@ -1,14 +1,14 @@
-import util from 'util';
-import AWS from 'aws-sdk';
+import { format } from 'util';
+import { config } from 'aws-sdk';
 
 let logs;
 
-AWS.config.logger = { log: debug };
+config.logger = { log: debug };
 
-export default function debug() {
+export default function debug(...args: any[]) {
   logs.push({
     date: new Date(),
-    string: util.format.apply(null, arguments),
+    string: format.apply(null, args),
   });
 }
 

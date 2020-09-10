@@ -24,12 +24,12 @@ describe('handleGlobalRanks', () => {
     const mockChannelStats1 = { 1: 3, 2: 1 };
     const mockChannelStats2 = { 1: 2, 3: 2 };
 
-    getChannelMap.mockResolvedValue(mockChannelMap);
-    getUserMap.mockResolvedValue(mockUserMap);
-    getChannelStats
+    (getChannelMap as jest.Mock).mockResolvedValue(mockChannelMap);
+    (getUserMap as jest.Mock).mockResolvedValue(mockUserMap);
+    (getChannelStats as jest.Mock)
       .mockResolvedValueOnce(mockChannelStats1)
       .mockResolvedValueOnce(mockChannelStats2);
-    buildStatRanks.mockReturnValue([
+    (buildStatRanks as jest.Mock).mockReturnValue([
       { rank: 1, userName: 'user1', messageCount: 5 },
       { rank: 2, userName: 'user3', messageCount: 2 },
       { rank: 3, userName: 'user2', messageCount: 1 },

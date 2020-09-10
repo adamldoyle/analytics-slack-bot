@@ -1,6 +1,6 @@
 import { WebClient } from '@slack/web-api';
 import { verifyRequestSignature } from '@slack/events-api';
-import SlackClient, { verifyRequest, getChannelMap, getUserMap } from './slack';
+import { verifyRequest, getChannelMap, getUserMap } from './slack';
 
 jest.mock('@slack/web-api');
 jest.mock('@slack/events-api');
@@ -27,7 +27,7 @@ describe('slack', () => {
         },
         body: 'testBody',
       };
-      verifyRequestSignature.mockReturnValue('testReturn');
+      (verifyRequestSignature as jest.Mock).mockReturnValue('testReturn');
       const result = verifyRequest(event);
       expect(result).toEqual('testReturn');
       expect(verifyRequestSignature).toBeCalledWith({
@@ -47,7 +47,7 @@ describe('slack', () => {
           { id: 'chan2', name: 'Channel2' },
         ],
       });
-      WebClient.mockImplementation(() => {
+      ((WebClient as any) as jest.Mock).mockImplementation(() => {
         return {
           users: {
             conversations: mockConversations,
@@ -67,7 +67,7 @@ describe('slack', () => {
           { id: 'user2', name: 'User2' },
         ],
       });
-      WebClient.mockImplementation(() => {
+      ((WebClient as any) as jest.Mock).mockImplementation(() => {
         return {
           users: {
             list: mockUsers,

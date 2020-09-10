@@ -1,10 +1,20 @@
 import SlackClient from './slack';
+import { WebAPICallResult } from '@slack/web-api';
+
+interface Message {
+  user?: string;
+  subtype?: string;
+}
+
+interface ConversationsHistoryResult extends WebAPICallResult {
+  messages: Message[];
+}
 
 export async function getChannelStats(channelId) {
-  let messages = [];
+  let messages: Message[] = [];
   for await (const response of SlackClient.paginate('conversations.history', {
     channel: channelId,
-  })) {
+  }) as AsyncIterable<ConversationsHistoryResult>) {
     messages = messages.concat(response.messages);
   }
   const channelCounts = messages.reduce((acc, message) => {

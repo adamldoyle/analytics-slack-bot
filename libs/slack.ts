@@ -1,4 +1,4 @@
-import { WebClient } from '@slack/web-api';
+import { WebClient, WebAPICallResult } from '@slack/web-api';
 import { verifyRequestSignature } from '@slack/events-api';
 
 const token = process.env.SLACK_TOKEN;
@@ -6,7 +6,7 @@ const SlackClient = new WebClient(token);
 export default SlackClient;
 
 export function verifyRequest(event) {
-  const signingSecret = process.env.SLACK_SIGNING_SECRET;
+  const signingSecret = process.env.SLACK_SIGNING_SECRET as string;
   const requestTimestamp = event.headers['X-Slack-Request-Timestamp'];
   const requestSignature = event.headers['X-Slack-Signature'];
   const body = event.body;
@@ -18,17 +18,33 @@ export function verifyRequest(event) {
   });
 }
 
+interface UsersConversationsResult extends WebAPICallResult {
+  channels: {
+    id: string;
+    name: string;
+  }[];
+}
+
 export async function getChannelMap() {
   // Using WebClient explicitly here instead of SlackToken to aid with testing
-  const response = await new WebClient(token).users.conversations();
+  const response = (await new WebClient(
+    token,
+  ).users.conversations()) as UsersConversationsResult;
   return response.channels.reduce((acc, channel) => {
     acc[channel.id] = channel.name;
     return acc;
   }, {});
 }
 
+interface UsersListResult extends WebAPICallResult {
+  members: {
+    id: string;
+    name: string;
+  }[];
+}
+
 export async function getUserMap() {
-  const response = await new WebClient(token).users.list();
+  const response = (await new WebClient(token).users.list()) as UsersListResult;
   return response.members.reduce((acc, user) => {
     acc[user.id] = user.name;
     return acc;

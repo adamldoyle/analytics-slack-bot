@@ -43,7 +43,7 @@ describe('eventHandler', () => {
         text: 'prefix channel ranks suffix',
       },
     };
-    channelRanksHandler.mockResolvedValue(true);
+    (channelRanksHandler as jest.Mock).mockResolvedValue(true);
     const response = await eventHandler(payload);
     expect(response).toBeTruthy();
     expect(channelRanksHandler).toBeCalledWith(payload);
@@ -56,7 +56,7 @@ describe('eventHandler', () => {
         text: 'prefix global ranks suffix',
       },
     };
-    globalRanksHandler.mockResolvedValue(true);
+    (globalRanksHandler as jest.Mock).mockResolvedValue(true);
     const response = await eventHandler(payload);
     expect(response).toBeTruthy();
     expect(globalRanksHandler).toBeCalledWith(payload);

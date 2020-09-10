@@ -1,4 +1,4 @@
-import util from 'util';
+import { format } from 'util';
 import debug, { init, flush } from './debug';
 
 jest.mock('aws-sdk');
@@ -12,7 +12,7 @@ describe('debug', () => {
     console = {
       debug: jest.fn(),
       error: jest.fn(),
-    };
+    } as any;
   });
 
   afterEach(() => {
@@ -34,17 +34,17 @@ describe('debug', () => {
     expect(console.debug).toHaveBeenNthCalledWith(
       1,
       expect.anything(),
-      util.format.apply(null, ['API event', event]),
+      format.apply(null, ['API event', event]),
     );
     expect(console.debug).toHaveBeenNthCalledWith(
       2,
       expect.anything(),
-      util.format.apply(null, ['one', { log: 1 }]),
+      format.apply(null, ['one', { log: 1 }]),
     );
     expect(console.debug).toHaveBeenNthCalledWith(
       3,
       expect.anything(),
-      util.format.apply(null, ['two', { log: 2 }]),
+      format.apply(null, ['two', { log: 2 }]),
     );
     expect(console.error).toBeCalledWith(error);
   });

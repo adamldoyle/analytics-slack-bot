@@ -2,7 +2,7 @@ import handler from './libs/handler';
 import { verifyRequest } from './libs/slack';
 import eventHandler from './events';
 
-export const main = handler(async (event, context) => {
+export const main = handler(async (event) => {
   const payload = JSON.parse(event.body);
 
   if (!verifyRequest(event)) {
