@@ -2,6 +2,9 @@ import handler from './libs/handler';
 import { verifyRequest } from './libs/slack';
 import eventHandler from './events';
 
+// eslint-disable-next-line no-console
+console.log(handler);
+
 export const main = handler(async (event) => {
   const payload = JSON.parse(event.body);
 
