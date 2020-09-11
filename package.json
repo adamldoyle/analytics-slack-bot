@@ -2,6 +2,7 @@
   "name": "analytics-slack-bot",
   "version": "1.0.0",
   "description": "Slackbot for dealing with analytics requests",
+  "private": true,
   "scripts": {
     "test": "serverless-bundle test --runInBand",
     "test:coverage": "serverless-bundle test --coverage --runInBand",
