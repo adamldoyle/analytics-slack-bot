@@ -1,5 +1,5 @@
 import * as debug from './debug';
-import handler from './handler';
+import { handler } from './handler';
 
 jest.mock('./debug');
 

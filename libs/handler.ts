@@ -1,6 +1,6 @@
 import * as debug from './debug';
 
-export default function handler(lambda) {
+export function handler(lambda) {
   return async (event, context) => {
     debug.init(event, context);
     return Promise.resolve()
