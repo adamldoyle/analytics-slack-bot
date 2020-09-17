@@ -34,3 +34,8 @@ export async function getUserMap() {
     return acc;
   }, {});
 }
+
+export async function getChannelMembers(channelId) {
+  const response = await new WebClient(token).conversations.members({ channel: channelId });
+  return response.members;
+}

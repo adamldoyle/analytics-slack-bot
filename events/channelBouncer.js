@@ -1,11 +1,12 @@
-import SlackClient, { getUserMap, getChannelMap } from '../libs/slack';
+import SlackClient, { getUserMap, getChannelMap, getChannelMembers } from '../libs/slack';
 import { getChannelStats, buildStatRanks } from '../libs/ranks';
 import { githubRepo } from './help';
 
 export default async function handleChannelBouncer(payload) {
-  const [channelStats, channelMap, userMap] = await Promise.all([
+  const [channelStats, channelMap, userMap, channelMembers] = await Promise.all([
     getChannelStats(payload.event.channel),
     getChannelMap(),
+    getChannelMembers(payload.event.channel),
     getUserMap(),
   ]);
   const channel = channelMap[payload.event.channel];
@@ -41,7 +42,7 @@ export default async function handleChannelBouncer(payload) {
     if (!rank.bot) {
       if (nonBotsSeen < rankAllowed) {
         nonBotsSeen++;
-      } else {
+      } else if (channelMembers.includes(rank.userId)) {
         ranksToBounce.push(rank);
       }
     }
