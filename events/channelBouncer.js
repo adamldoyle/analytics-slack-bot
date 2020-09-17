@@ -11,7 +11,7 @@ export default async function handleChannelBouncer(payload) {
   const channel = channelMap[payload.event.channel];
   const ranks = buildStatRanks(channelStats, userMap);
   if (channel === 'top_four') {
-    const rankAllowed = 0;
+    const rankAllowed = 4;
     let nonBotsSeen = 0;
     const ranksToBounce = [];
     ranks.forEach((rank) => {
