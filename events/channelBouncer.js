@@ -3,7 +3,7 @@ import { getChannelStats, buildStatRanks } from '../libs/ranks';
 import { githubRepo } from './help';
 
 export default async function handleChannelBouncer(payload) {
-  const [channelStats, channelMap, userMap, channelMembers] = await Promise.all([
+  const [channelStats, channelMap, channelMembers, userMap] = await Promise.all([
     getChannelStats(payload.event.channel),
     getChannelMap(),
     getChannelMembers(payload.event.channel),
