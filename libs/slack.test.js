@@ -63,8 +63,8 @@ describe('slack', () => {
     it('converts to map', async () => {
       const mockUsers = jest.fn().mockResolvedValue({
         members: [
-          { id: 'user1', name: 'User1' },
-          { id: 'user2', name: 'User2' },
+          { id: 'user1', name: 'User1', is_bot: true },
+          { id: 'user2', name: 'User2', is_bot: false },
         ],
       });
       WebClient.mockImplementation(() => {
@@ -75,7 +75,10 @@ describe('slack', () => {
         };
       });
       const result = await getUserMap();
-      expect(result).toEqual({ user1: 'User1', user2: 'User2' });
+      expect(result).toEqual({
+        user1: { id: 'user1', name: 'User1', bot: true },
+        user2: { id: 'user2', name: 'User2', bot: false },
+      });
     });
   });
 });

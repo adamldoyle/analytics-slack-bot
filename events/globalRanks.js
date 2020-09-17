@@ -19,7 +19,9 @@ export default async function handleGlobalRanks(payload) {
   const rankOutput = ranks
     .map(
       (rank) =>
-        `${rank.rank}: ${rank.userName} (${rank.messageCount} messages)`,
+        `${rank.rank}: ${rank.userName}${rank.bot ? '*' : ''} (${
+          rank.messageCount
+        } messages)`,
     )
     .join('\n');
   const channelOutput = Object.keys(channelMap)

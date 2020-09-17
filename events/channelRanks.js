@@ -10,7 +10,9 @@ export default async function handleChannelRanks(payload) {
   const rankOutput = ranks
     .map(
       (rank) =>
-        `${rank.rank}: ${rank.userName} (${rank.messageCount} messages)`,
+        `${rank.rank}: ${rank.userName}${rank.bot ? '*' : ''} (${
+          rank.messageCount
+        } messages)`,
     )
     .join('\n');
   await SlackClient.chat.postMessage({

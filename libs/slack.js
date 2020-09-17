@@ -30,7 +30,7 @@ export async function getChannelMap() {
 export async function getUserMap() {
   const response = await new WebClient(token).users.list();
   return response.members.reduce((acc, user) => {
-    acc[user.id] = user.name;
+    acc[user.id] = { id: user.id, name: user.name, bot: user.is_bot };
     return acc;
   }, {});
 }

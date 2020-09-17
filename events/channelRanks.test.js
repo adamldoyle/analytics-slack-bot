@@ -21,8 +21,8 @@ describe('handleChannelRanks', () => {
     getUserMap.mockResolvedValue(mockUserMap);
     getChannelStats.mockResolvedValue(mockChannelStats);
     buildStatRanks.mockReturnValue([
-      { rank: 1, userName: 'user1', messageCount: 3 },
-      { rank: 2, userName: 'user2', messageCount: 2 },
+      { rank: 1, userName: 'user1', bot: true, messageCount: 3 },
+      { rank: 2, userName: 'user2', bot: false, messageCount: 2 },
     ]);
     const response = await handleChannelRanks(payload);
     expect(getUserMap).toBeCalled();
@@ -30,7 +30,7 @@ describe('handleChannelRanks', () => {
     expect(buildStatRanks).toBeCalledWith(mockChannelStats, mockUserMap);
     expect(SlackClient.chat.postMessage).toBeCalledWith({
       channel: 'testChannel',
-      text: 'Channel ranks:\n\n1: user1 (3 messages)\n2: user2 (2 messages)',
+      text: 'Channel ranks:\n\n1: user1* (3 messages)\n2: user2 (2 messages)',
     });
     expect(response).toBeTruthy();
   });
