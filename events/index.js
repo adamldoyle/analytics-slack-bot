@@ -1,5 +1,6 @@
 import channelRanksHandler from './channelRanks';
 import globalRanksHandler from './globalRanks';
+import channelBouncerHandler from './channelBouncer';
 import { handleSource, handleHelp } from './help';
 
 export default async function handleEvent(payload) {
@@ -16,6 +17,9 @@ export default async function handleEvent(payload) {
     }
     if (text.includes('help')) {
       return handleHelp(payload);
+    }
+    if (text.includes('channel bouncer')) {
+      return channelBouncerHandler(payload);
     }
   }
 }

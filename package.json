@@ -13,6 +13,7 @@
   "author": "Adam Doyle <adamldoyle@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "aws-sdk": "^2.747.0",
     "pre-commit": "^1.2.2",
     "prettier": "^2.1.1",
     "serverless-bundle": "^3.0.0",
@@ -20,7 +21,6 @@
   },
   "dependencies": {
     "@slack/events-api": "^2.3.4",
-    "@slack/web-api": "^5.11.0",
-    "aws-sdk": "^2.747.0"
+    "@slack/web-api": "^5.11.0"
   }
 }

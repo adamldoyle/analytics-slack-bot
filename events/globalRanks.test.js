@@ -30,9 +30,9 @@ describe('handleGlobalRanks', () => {
       .mockResolvedValueOnce(mockChannelStats1)
       .mockResolvedValueOnce(mockChannelStats2);
     buildStatRanks.mockReturnValue([
-      { rank: 1, userName: 'user1', messageCount: 5 },
-      { rank: 2, userName: 'user3', messageCount: 2 },
-      { rank: 3, userName: 'user2', messageCount: 1 },
+      { rank: 1, userName: 'user1', bot: true, messageCount: 5 },
+      { rank: 2, userName: 'user3', bot: false, messageCount: 2 },
+      { rank: 3, userName: 'user2', bot: false, messageCount: 1 },
     ]);
 
     const response = await handleGlobalRanks(payload);
@@ -45,7 +45,7 @@ describe('handleGlobalRanks', () => {
     expect(SlackClient.chat.postMessage).toBeCalledWith({
       channel: 'testChannel',
       text:
-        'Global ranks:\n\n1: user1 (5 messages)\n2: user3 (2 messages)\n3: user2 (1 messages)\n\nChannels monitored: testChannel1, testChannel2',
+        'Global ranks:\n\n1: user1* (5 messages)\n2: user3 (2 messages)\n3: user2 (1 messages)\n\nChannels monitored: testChannel1, testChannel2',
     });
     expect(response).toBeTruthy();
   });

@@ -1,8 +1,10 @@
 import SlackClient from '../libs/slack';
 
+export const githubRepo = 'https://github.com/adamldoyle/analytics-slack-bot';
+
 export async function handleSource(payload) {
   await SlackClient.chat.postMessage({
-    text: 'Source: https://github.com/adamldoyle/analytics-slack-bot',
+    text: `Source: ${githubRepo}`,
     channel: payload.event.channel,
   });
   return true;

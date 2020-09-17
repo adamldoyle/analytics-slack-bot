@@ -24,7 +24,8 @@ export function buildStatRanks(stats, users) {
   return Object.keys(stats)
     .map((userId) => ({
       userId,
-      userName: users[userId],
+      userName: users[userId].name,
+      bot: users[userId].bot,
       messageCount: stats[userId],
       rank: -1,
     }))
