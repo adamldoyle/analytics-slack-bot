@@ -12,7 +12,7 @@ export default async function handleChannelBouncer(payload) {
   const channel = channelMap[payload.event.channel];
   const ranks = buildStatRanks(channelStats, userMap);
 
-  if (channel !== 'top_four' && channel !== 'bottom_three') {
+  if ((!channel.startsWith('top_') && !channel.startsWith('bottom_')) || (!channel.endsWith('_one') && !channel.endsWith('_two') && !channel.endsWith('_three') && !channel.endsWith('_four'))) {
     await SlackClient.chat.postMessage({
       text: `I don't know how to manage this channel, perhaps a PR would help? ${githubRepo}`,
       channel: payload.event.channel,
