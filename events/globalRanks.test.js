@@ -1,5 +1,5 @@
-import SlackClient, { getUserMap, getChannelMap } from '../libs/slack';
-import { getChannelStats, buildStatRanks } from '../libs/ranks';
+import SlackClient, { getUserMap } from '../libs/slack';
+import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 import handleGlobalRanks from './globalRanks';
 
 jest.mock('../libs/slack');
@@ -20,15 +20,14 @@ describe('handleGlobalRanks', () => {
       testChannel1: 'testChannel1',
       testChannel2: 'testChannel2',
     };
+    const mockGlobalStats = { 1: 5, 2: 1, 3: 2 };
     const mockUserMap = { 1: 'user1', 2: 'user2', 3: 'user3' };
-    const mockChannelStats1 = { 1: 3, 2: 1 };
-    const mockChannelStats2 = { 1: 2, 3: 2 };
 
-    getChannelMap.mockResolvedValue(mockChannelMap);
+    getGlobalStats.mockResolvedValue({
+      globalStats: mockGlobalStats,
+      channelMap: mockChannelMap,
+    });
     getUserMap.mockResolvedValue(mockUserMap);
-    getChannelStats
-      .mockResolvedValueOnce(mockChannelStats1)
-      .mockResolvedValueOnce(mockChannelStats2);
     buildStatRanks.mockReturnValue([
       { rank: 1, userName: 'user1', bot: true, messageCount: 5 },
       { rank: 2, userName: 'user3', bot: false, messageCount: 2 },
@@ -37,10 +36,8 @@ describe('handleGlobalRanks', () => {
 
     const response = await handleGlobalRanks(payload);
 
-    expect(getChannelMap).toBeCalled();
     expect(getUserMap).toBeCalled();
-    expect(getChannelStats).toHaveBeenNthCalledWith(1, 'testChannel1');
-    expect(getChannelStats).toHaveBeenNthCalledWith(2, 'testChannel2');
+    expect(getGlobalStats).toBeCalled();
     expect(buildStatRanks).toBeCalledWith({ 1: 5, 2: 1, 3: 2 }, mockUserMap);
     expect(SlackClient.chat.postMessage).toBeCalledWith({
       channel: 'testChannel',

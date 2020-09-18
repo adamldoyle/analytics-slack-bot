@@ -1,4 +1,4 @@
-import SlackClient from './slack';
+import SlackClient, { getChannelMap } from './slack';
 
 export async function getChannelStats(channelId) {
   let messages = [];
@@ -18,6 +18,20 @@ export async function getChannelStats(channelId) {
   }, {});
 
   return channelCounts;
+}
+
+export async function getGlobalStats() {
+  const channelMap = await getChannelMap();
+  const channelsStats = await Promise.all(
+    Object.keys(channelMap).map((channelId) => getChannelStats(channelId)),
+  );
+  const globalStats = channelsStats.reduce((acc, channelStats) => {
+    Object.keys(channelStats).forEach((userId) => {
+      acc[userId] = channelStats[userId] + (acc[userId] || 0);
+    });
+    return acc;
+  }, {});
+  return { channelMap, globalStats };
 }
 
 export function buildStatRanks(stats, users) {

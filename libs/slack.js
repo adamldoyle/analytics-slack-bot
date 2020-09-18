@@ -1,7 +1,9 @@
 import { WebClient } from '@slack/web-api';
 import { verifyRequestSignature } from '@slack/events-api';
 
-const token = process.env.SLACK_TOKEN;
+const token =
+  process.env.SLACK_TOKEN ||
+  'xoxb-1264925304405-1341442215382-FvPNqoNE14JJCAPa46PcEbHY';
 const SlackClient = new WebClient(token);
 export default SlackClient;
 
@@ -36,6 +38,8 @@ export async function getUserMap() {
 }
 
 export async function getChannelMembers(channelId) {
-  const response = await new WebClient(token).conversations.members({ channel: channelId });
+  const response = await new WebClient(token).conversations.members({
+    channel: channelId,
+  });
   return response.members;
 }
