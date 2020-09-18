@@ -13,7 +13,7 @@ export async function handleSource(payload) {
 export async function handleHelp(payload) {
   await SlackClient.chat.postMessage({
     text:
-      'Available commands: "channel ranks", "global ranks", "source", "help"',
+      'Available commands: "channel ranks", "global ranks", "channel bouncer", "source", "help"',
     channel: payload.event.channel,
   });
   return true;
