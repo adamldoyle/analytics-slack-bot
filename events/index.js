@@ -22,4 +22,7 @@ export default async function handleEvent(payload) {
       return channelBouncerHandler(payload);
     }
   }
+  if (payload.event.type === 'member_joined_channel') {
+    return channelBouncerHandler(payload);
+  }
 }
