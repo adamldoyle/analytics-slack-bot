@@ -66,6 +66,18 @@ export default async function handleChannelBouncer(payload) {
       channel: payload.event.channel,
     });
   } else {
+    if (ranksToInvite.length > 0) {
+      await SlackClient.conversations.invite({
+        users: ranksToInvite.map((rank) => rank.userId).join(','),
+        channel: payload.event.channel,
+      });
+      await SlackClient.chat.postMessage({
+        text: `Come on in, welcome to the party: ${ranksToInvite
+          .map((rank) => rank.userName)
+          .join(', ')}!`,
+        channel: payload.event.channel,
+      });
+    }
     if (ranksToBounce.length > 0) {
       await SlackClient.chat.postMessage({
         text: `Come on now, you know you don\'t belong here: ${ranksToBounce
@@ -81,18 +93,6 @@ export default async function handleChannelBouncer(payload) {
           }),
         ),
       );
-    }
-    if (ranksToInvite.length > 0) {
-      await SlackClient.conversations.invite({
-        users: ranksToInvite.map((rank) => rank.userId).join(','),
-        channel: payload.event.channel,
-      });
-      await SlackClient.chat.postMessage({
-        text: `Come on in, welcome to the party: ${ranksToInvite
-          .map((rank) => rank.userName)
-          .join(', ')}!`,
-        channel: payload.event.channel,
-      });
     }
   }
 }
