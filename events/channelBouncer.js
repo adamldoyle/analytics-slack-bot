@@ -20,12 +20,15 @@ export default async function handleChannelBouncer(payload) {
     (!channel.endsWith('_one') &&
       !channel.endsWith('_two') &&
       !channel.endsWith('_three') &&
+      !channel.endsWith('_four') &&
       !channel.endsWith('_four'))
   ) {
-    await SlackClient.chat.postMessage({
-      text: `I don't know how to manage this channel, perhaps a PR would help? ${githubRepo}`,
-      channel: payload.event.channel,
-    });
+    if (payload.event.type === 'app_mention') {
+      await SlackClient.chat.postMessage({
+        text: `I don't know how to manage this channel, perhaps a PR would help? ${githubRepo}`,
+        channel: payload.event.channel,
+      });
+    }
     return;
   }
 
@@ -43,6 +46,8 @@ export default async function handleChannelBouncer(payload) {
     rankAllowed = 3;
   } else if (channel.endsWith('_four')) {
     rankAllowed = 4;
+  } else if (channel.endsWith('_five')) {
+    rankAllowed = 5;
   }
 
   let nonBotsSeen = 0;
@@ -61,22 +66,26 @@ export default async function handleChannelBouncer(payload) {
     }
   });
   if (ranksToBounce.length === 0 && ranksToInvite.length === 0) {
-    await SlackClient.chat.postMessage({
-      text: 'Everything looks good here!',
-      channel: payload.event.channel,
-    });
-  } else {
-    if (ranksToInvite.length > 0) {
-      await SlackClient.conversations.invite({
-        users: ranksToInvite.map((rank) => rank.userId).join(','),
-        channel: payload.event.channel,
-      });
+    if (payload.event.type === 'app_mention') {
       await SlackClient.chat.postMessage({
-        text: `Come on in, welcome to the party: ${ranksToInvite
-          .map((rank) => rank.userName)
-          .join(', ')}!`,
+        text: 'Everything looks good here!',
         channel: payload.event.channel,
       });
+    }
+  } else {
+    if (payload.event.type === 'app_mention') {
+      if (ranksToInvite.length > 0) {
+        await SlackClient.conversations.invite({
+          users: ranksToInvite.map((rank) => rank.userId).join(','),
+          channel: payload.event.channel,
+        });
+        await SlackClient.chat.postMessage({
+          text: `Come on in, welcome to the party: ${ranksToInvite
+            .map((rank) => rank.userName)
+            .join(', ')}!`,
+          channel: payload.event.channel,
+        });
+      }
     }
     if (ranksToBounce.length > 0) {
       await SlackClient.chat.postMessage({
