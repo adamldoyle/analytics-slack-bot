@@ -17,11 +17,12 @@ export default async function handleChannelBouncer(payload) {
 
   if (
     (!channel.startsWith('top_') && !channel.startsWith('bottom_')) ||
-    (!channel.endsWith('_one') &&
+    (!channel.endsWith('_zero') &&
+      !channel.endsWith('_one') &&
       !channel.endsWith('_two') &&
       !channel.endsWith('_three') &&
       !channel.endsWith('_four') &&
-      !channel.endsWith('_four'))
+      !channel.endsWith('_five'))
   ) {
     if (payload.event.type === 'app_mention') {
       await SlackClient.chat.postMessage({
@@ -38,7 +39,9 @@ export default async function handleChannelBouncer(payload) {
 
   let rankAllowed = 100;
   // This is stupid, whatever
-  if (channel.endsWith('_one')) {
+  if (channel.endsWith('_zero')) {
+    rankAllowed = 0;
+  } else if (channel.endsWith('_one')) {
     rankAllowed = 1;
   } else if (channel.endsWith('_two')) {
     rankAllowed = 2;
