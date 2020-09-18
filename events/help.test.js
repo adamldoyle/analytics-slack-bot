@@ -30,7 +30,7 @@ describe('help', () => {
       expect(SlackClient.chat.postMessage).toBeCalledWith({
         channel: 'testChannel',
         text:
-          'Available commands: "channel ranks", "global ranks", "source", "help"',
+          'Available commands: "channel ranks", "global ranks", "channel bouncer", "source", "help"',
       });
     });
   });
