@@ -1,3 +1,4 @@
+import handleChannelBouncer from './channelBouncer';
 import channelRanksHandler from './channelRanks';
 import globalRanksHandler from './globalRanks';
 import { handleSource, handleHelp } from './help';
@@ -5,9 +6,31 @@ import eventHandler from './index';
 
 jest.mock('./channelRanks');
 jest.mock('./globalRanks');
+jest.mock('./channelBouncer');
 jest.mock('./help');
 
+function validateCorrectHandler(expectedHandler) {
+  const allHandlers = [
+    channelRanksHandler,
+    globalRanksHandler,
+    handleChannelBouncer,
+    handleSource,
+    handleHelp,
+  ];
+  allHandlers.forEach((handler) => {
+    if (expectedHandler === handler) {
+      expect(handler).toBeCalled();
+    } else {
+      expect(handler).not.toBeCalled();
+    }
+  });
+}
+
 describe('eventHandler', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('non matching type skips handlers', async () => {
     const payload = {
       event: {
@@ -16,10 +39,7 @@ describe('eventHandler', () => {
       },
     };
     await eventHandler(payload);
-    expect(channelRanksHandler).not.toBeCalled();
-    expect(globalRanksHandler).not.toBeCalled();
-    expect(handleSource).not.toBeCalled();
-    expect(handleHelp).not.toBeCalled();
+    validateCorrectHandler(null);
   });
 
   it('non matching app_mention skips handlers', async () => {
@@ -30,10 +50,7 @@ describe('eventHandler', () => {
       },
     };
     await eventHandler(payload);
-    expect(channelRanksHandler).not.toBeCalled();
-    expect(globalRanksHandler).not.toBeCalled();
-    expect(handleSource).not.toBeCalled();
-    expect(handleHelp).not.toBeCalled();
+    validateCorrectHandler(null);
   });
 
   it('processes channel ranks messages', async () => {
@@ -46,6 +63,7 @@ describe('eventHandler', () => {
     channelRanksHandler.mockResolvedValue(true);
     const response = await eventHandler(payload);
     expect(response).toBeTruthy();
+    validateCorrectHandler(channelRanksHandler);
     expect(channelRanksHandler).toBeCalledWith(payload);
   });
 
@@ -59,7 +77,22 @@ describe('eventHandler', () => {
     globalRanksHandler.mockResolvedValue(true);
     const response = await eventHandler(payload);
     expect(response).toBeTruthy();
+    validateCorrectHandler(globalRanksHandler);
     expect(globalRanksHandler).toBeCalledWith(payload);
+  });
+
+  it('processes channel bouncer messages', async () => {
+    const payload = {
+      event: {
+        type: 'app_mention',
+        text: 'prefix channel bouncer suffix',
+      },
+    };
+    handleChannelBouncer.mockResolvedValue(true);
+    const response = await eventHandler(payload);
+    expect(response).toBeTruthy();
+    validateCorrectHandler(handleChannelBouncer);
+    expect(handleChannelBouncer).toBeCalledWith(payload);
   });
 
   it('processes source messages', async () => {
@@ -70,6 +103,7 @@ describe('eventHandler', () => {
       },
     };
     await eventHandler(payload);
+    validateCorrectHandler(handleSource);
     expect(handleSource).toBeCalled();
   });
 
@@ -81,6 +115,20 @@ describe('eventHandler', () => {
       },
     };
     await eventHandler(payload);
+    validateCorrectHandler(handleHelp);
     expect(handleHelp).toBeCalled();
+  });
+
+  it('processes member_joined_channel', async () => {
+    const payload = {
+      event: {
+        type: 'member_joined_channel',
+      },
+    };
+    handleChannelBouncer.mockResolvedValue(true);
+    const response = await eventHandler(payload);
+    expect(response).toBeTruthy();
+    validateCorrectHandler(handleChannelBouncer);
+    expect(handleChannelBouncer).toBeCalledWith(payload);
   });
 });

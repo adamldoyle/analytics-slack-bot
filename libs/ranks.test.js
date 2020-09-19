@@ -1,5 +1,5 @@
-import SlackClient from './slack';
-import { getChannelStats, buildStatRanks } from './ranks';
+import SlackClient, { getChannelMap } from './slack';
+import { getChannelStats, buildStatRanks, getGlobalStats } from './ranks';
 
 jest.mock('./slack');
 
@@ -38,6 +38,47 @@ describe('ranks', () => {
       });
       const result = await getChannelStats('testChannelId');
       expect(result).toEqual({ user1: 1 });
+    });
+  });
+
+  describe('getGlobalStats', () => {
+    it('merges channel results', async () => {
+      const mockChannelMap = {
+        1: 'channel1',
+        2: 'channel2',
+      };
+      getChannelMap.mockResolvedValue(mockChannelMap);
+      SlackClient.paginate = jest
+        .fn()
+        .mockImplementation(function* (_, { channel }) {
+          if (channel === '1') {
+            yield {
+              messages: [
+                { user: 'user1' },
+                { user: 'user2' },
+                { user: 'user1' },
+              ],
+            };
+            yield { messages: [{ user: 'user3' }, { user: 'user2' }] };
+          } else if (channel === '2') {
+            yield {
+              messages: [
+                { user: 'user3' },
+                { user: 'user2' },
+                { user: 'user4' },
+              ],
+            };
+            yield { messages: [{ user: 'user1' }, { user: 'user2' }] };
+          }
+        });
+      const { channelMap, globalStats } = await getGlobalStats();
+      expect(channelMap).toEqual(mockChannelMap);
+      expect(globalStats).toEqual({
+        user1: 3,
+        user2: 4,
+        user3: 2,
+        user4: 1,
+      });
     });
   });
 
