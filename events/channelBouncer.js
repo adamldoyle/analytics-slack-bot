@@ -1,22 +1,17 @@
-import SlackClient, { getUserMap, getChannelMembers } from '../libs/slack';
+import SlackClient, {
+  getUserMap,
+  getChannelMembers,
+  getChannelMap,
+} from '../libs/slack';
 import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 import { githubRepo } from './help';
 import wordsToNumbers from 'words-to-numbers';
 
-const re = /^(?<positions>top|bottom)_(?<count>[a-z_]+)$/;
+const re = /^(?<positions>top|bottom)_(?<rankAllowed>[a-z_]+)$/;
 
 export default async function handleChannelBouncer(payload) {
-  const [
-    { channelMap, globalStats },
-    channelMembers,
-    userMap,
-  ] = await Promise.all([
-    getGlobalStats(),
-    getChannelMembers(payload.event.channel),
-    getUserMap(),
-  ]);
+  const channelMap = await getChannelMap();
   const channel = channelMap[payload.event.channel];
-  const ranks = buildStatRanks(globalStats, userMap);
 
   // Doesn't match string or words can't be converted to numbers
   const match = channel.match(re);
@@ -33,6 +28,13 @@ export default async function handleChannelBouncer(payload) {
     return;
   }
 
+  const [{ globalStats }, channelMembers, userMap] = await Promise.all([
+    getGlobalStats(channelMap),
+    getChannelMembers(payload.event.channel),
+    getUserMap(),
+  ]);
+
+  const ranks = buildStatRanks(globalStats, userMap);
   const { position, rankAllowed } = match.groups;
 
   if (position === 'bottom') {

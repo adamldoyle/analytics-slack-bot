@@ -20,8 +20,8 @@ export async function getChannelStats(channelId) {
   return channelCounts;
 }
 
-export async function getGlobalStats() {
-  const channelMap = await getChannelMap();
+export async function getGlobalStats(channelMapParam = null) {
+  const channelMap = channelMapParam || (await getChannelMap());
   const channelsStats = await Promise.all(
     Object.keys(channelMap).map((channelId) => getChannelStats(channelId)),
   );
