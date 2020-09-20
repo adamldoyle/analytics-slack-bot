@@ -34,7 +34,7 @@ describe('handleGlobalRanks', () => {
       { rank: 3, userName: 'user2', bot: false, messageCount: 1 },
     ]);
 
-    const response = await handleGlobalRanks(payload);
+    await handleGlobalRanks(payload);
 
     expect(getUserMap).toBeCalled();
     expect(getGlobalStats).toBeCalled();
@@ -44,6 +44,5 @@ describe('handleGlobalRanks', () => {
       text:
         'Global ranks:\n\n1: user1* (5 messages)\n2: user3 (2 messages)\n3: user2 (1 messages)\n\nChannels monitored: testChannel1, testChannel2',
     });
-    expect(response).toBeTruthy();
   });
 });

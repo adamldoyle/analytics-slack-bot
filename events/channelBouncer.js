@@ -1,28 +1,23 @@
-import SlackClient, { getUserMap, getChannelMembers } from '../libs/slack';
+import SlackClient, {
+  getUserMap,
+  getChannelMembers,
+  getChannelMap,
+} from '../libs/slack';
 import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 import { githubRepo } from './help';
+import wordsToNumbers from 'words-to-numbers';
+
+const re = /^(?<position>top|bottom)_(?<rankAllowed>[a-z_]+)$/;
 
 export default async function handleChannelBouncer(payload) {
-  const [
-    { channelMap, globalStats },
-    channelMembers,
-    userMap,
-  ] = await Promise.all([
-    getGlobalStats(),
-    getChannelMembers(payload.event.channel),
-    getUserMap(),
-  ]);
+  const channelMap = await getChannelMap();
   const channel = channelMap[payload.event.channel];
-  const ranks = buildStatRanks(globalStats, userMap);
 
+  // Doesn't match string or words can't be converted to numbers
+  const match = channel.match(re);
   if (
-    (!channel.startsWith('top_') && !channel.startsWith('bottom_')) ||
-    (!channel.endsWith('_zero') &&
-      !channel.endsWith('_one') &&
-      !channel.endsWith('_two') &&
-      !channel.endsWith('_three') &&
-      !channel.endsWith('_four') &&
-      !channel.endsWith('_five'))
+    !match ||
+    wordsToNumbers(match.groups.rankAllowed) === match.groups.rankAllowed
   ) {
     if (payload.event.type === 'app_mention') {
       await SlackClient.chat.postMessage({
@@ -33,24 +28,18 @@ export default async function handleChannelBouncer(payload) {
     return;
   }
 
-  if (channel.startsWith('bottom_')) {
-    ranks.reverse();
-  }
+  const [{ globalStats }, channelMembers, userMap] = await Promise.all([
+    getGlobalStats(channelMap),
+    getChannelMembers(payload.event.channel),
+    getUserMap(),
+  ]);
 
-  let rankAllowed = 100;
-  // This is stupid, whatever
-  if (channel.endsWith('_zero')) {
-    rankAllowed = 0;
-  } else if (channel.endsWith('_one')) {
-    rankAllowed = 1;
-  } else if (channel.endsWith('_two')) {
-    rankAllowed = 2;
-  } else if (channel.endsWith('_three')) {
-    rankAllowed = 3;
-  } else if (channel.endsWith('_four')) {
-    rankAllowed = 4;
-  } else if (channel.endsWith('_five')) {
-    rankAllowed = 5;
+  const ranks = buildStatRanks(globalStats, userMap);
+  const { position } = match.groups;
+  const rankAllowed = wordsToNumbers(match.groups.rankAllowed);
+
+  if (position === 'bottom') {
+    ranks.reverse();
   }
 
   let nonBotsSeen = 0;
@@ -68,6 +57,7 @@ export default async function handleChannelBouncer(payload) {
       }
     }
   });
+
   if (ranksToBounce.length === 0 && ranksToInvite.length === 0) {
     if (payload.event.type === 'app_mention') {
       await SlackClient.chat.postMessage({
@@ -92,7 +82,7 @@ export default async function handleChannelBouncer(payload) {
     }
     if (ranksToBounce.length > 0) {
       await SlackClient.chat.postMessage({
-        text: `Come on now, you know you don\'t belong here: ${ranksToBounce
+        text: `Come on now, you know you don't belong here: ${ranksToBounce
           .map((rank) => rank.userName)
           .join(', ')}!`,
         channel: payload.event.channel,

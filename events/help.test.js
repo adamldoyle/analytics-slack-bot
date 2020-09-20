@@ -1,5 +1,5 @@
 import SlackClient from '../libs/slack';
-import { handleSource, handleHelp } from './help';
+import { handleSource, handleHelp, handleVersion } from './help';
 
 jest.mock('../libs/slack');
 
@@ -11,7 +11,7 @@ describe('help', () => {
           channel: 'testChannel',
         },
       };
-      const result = await handleSource(payload);
+      await handleSource(payload);
       expect(SlackClient.chat.postMessage).toBeCalledWith({
         channel: 'testChannel',
         text: 'Source: https://github.com/adamldoyle/analytics-slack-bot',
@@ -26,11 +26,26 @@ describe('help', () => {
           channel: 'testChannel',
         },
       };
-      const result = await handleHelp(payload);
+      await handleHelp(payload);
       expect(SlackClient.chat.postMessage).toBeCalledWith({
         channel: 'testChannel',
         text:
-          'Available commands: "channel ranks", "global ranks", "channel bouncer", "source", "help"',
+          'Available commands: "channel bouncer", "channel ranks", "global ranks", "help", "source", "version"',
+      });
+    });
+  });
+
+  describe('handleVersion', () => {
+    it('outputs version', async () => {
+      const payload = {
+        event: {
+          channel: 'testChannel',
+        },
+      };
+      await handleVersion(payload);
+      expect(SlackClient.chat.postMessage).toBeCalledWith({
+        channel: 'testChannel',
+        text: expect.stringMatching(/Current version: [0-9]+\.[0-9]+\.[0-9]+/),
       });
     });
   });
