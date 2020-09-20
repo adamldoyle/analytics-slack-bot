@@ -7,7 +7,7 @@ import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 import { githubRepo } from './help';
 import wordsToNumbers from 'words-to-numbers';
 
-const re = /^(?<positions>top|bottom)_(?<rankAllowed>[a-z_]+)$/;
+const re = /^(?<position>top|bottom)_(?<rankAllowed>[a-z_]+)$/;
 
 export default async function handleChannelBouncer(payload) {
   const channelMap = await getChannelMap();
@@ -35,7 +35,8 @@ export default async function handleChannelBouncer(payload) {
   ]);
 
   const ranks = buildStatRanks(globalStats, userMap);
-  const { position, rankAllowed } = match.groups;
+  const { position } = match.groups;
+  const rankAllowed = wordsToNumbers(match.groups.rankAllowed);
 
   if (position === 'bottom') {
     ranks.reverse();
@@ -56,6 +57,7 @@ export default async function handleChannelBouncer(payload) {
       }
     }
   });
+
   if (ranksToBounce.length === 0 && ranksToInvite.length === 0) {
     if (payload.event.type === 'app_mention') {
       await SlackClient.chat.postMessage({
@@ -80,7 +82,7 @@ export default async function handleChannelBouncer(payload) {
     }
     if (ranksToBounce.length > 0) {
       await SlackClient.chat.postMessage({
-        text: `Come on now, you know you don\'t belong here: ${ranksToBounce
+        text: `Come on now, you know you don't belong here: ${ranksToBounce
           .map((rank) => rank.userName)
           .join(', ')}!`,
         channel: payload.event.channel,

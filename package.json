@@ -10,9 +10,7 @@
     "prettier": "prettier .",
     "prettify": "prettier --write ."
   },
-  "pre-commit": [
-    "test"
-  ],
+  "pre-commit": [],
   "author": "Adam Doyle <adamldoyle@gmail.com>",
   "license": "MIT",
   "devDependencies": {
