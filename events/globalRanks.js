@@ -20,5 +20,4 @@ export default async function handleGlobalRanks(payload) {
     text: `Global ranks:\n\n${rankOutput}\n\nChannels monitored: ${channelOutput}`,
     channel: payload.event.channel,
   });
-  return true;
 }

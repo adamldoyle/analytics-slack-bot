@@ -24,7 +24,7 @@ describe('handleChannelRanks', () => {
       { rank: 1, userName: 'user1', bot: true, messageCount: 3 },
       { rank: 2, userName: 'user2', bot: false, messageCount: 2 },
     ]);
-    const response = await handleChannelRanks(payload);
+    await handleChannelRanks(payload);
     expect(getUserMap).toBeCalled();
     expect(getChannelStats).toBeCalledWith('testChannel');
     expect(buildStatRanks).toBeCalledWith(mockChannelStats, mockUserMap);
@@ -32,6 +32,5 @@ describe('handleChannelRanks', () => {
       channel: 'testChannel',
       text: 'Channel ranks:\n\n1: user1* (3 messages)\n2: user2 (2 messages)',
     });
-    expect(response).toBeTruthy();
   });
 });

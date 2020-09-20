@@ -4,4 +4,5 @@ export default {
   GLOBAL_RANKS: 'global ranks',
   HELP: 'help',
   SOURCE: 'source',
+  VERSION: 'version',
 };

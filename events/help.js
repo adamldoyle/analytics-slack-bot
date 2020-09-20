@@ -1,5 +1,6 @@
 import SlackClient from '../libs/slack';
 import mentionMessages from './mentionMessages';
+import packageJson from '../package.json';
 
 export const githubRepo = 'https://github.com/adamldoyle/analytics-slack-bot';
 
@@ -8,7 +9,6 @@ export async function handleSource(payload) {
     text: `Source: ${githubRepo}`,
     channel: payload.event.channel,
   });
-  return true;
 }
 
 export async function handleHelp(payload) {
@@ -18,5 +18,11 @@ export async function handleHelp(payload) {
       .join(', ')}`,
     channel: payload.event.channel,
   });
-  return true;
+}
+
+export async function handleVersion(payload) {
+  await SlackClient.chat.postMessage({
+    text: `Current version: ${packageJson.version}`,
+    channel: payload.event.channel,
+  });
 }

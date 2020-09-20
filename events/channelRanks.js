@@ -19,5 +19,4 @@ export default async function handleChannelRanks(payload) {
     text: `Channel ranks:\n\n${rankOutput}`,
     channel: payload.event.channel,
   });
-  return true;
 }

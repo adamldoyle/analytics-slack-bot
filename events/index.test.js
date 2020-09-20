@@ -1,7 +1,7 @@
 import handleChannelBouncer from './channelBouncer';
 import channelRanksHandler from './channelRanks';
 import globalRanksHandler from './globalRanks';
-import { handleSource, handleHelp } from './help';
+import { handleSource, handleHelp, handleVersion } from './help';
 import eventHandler from './index';
 
 jest.mock('./channelRanks');
@@ -16,6 +16,7 @@ function validateCorrectHandler(expectedHandler) {
     handleChannelBouncer,
     handleSource,
     handleHelp,
+    handleVersion,
   ];
   allHandlers.forEach((handler) => {
     if (expectedHandler === handler) {
@@ -117,6 +118,18 @@ describe('eventHandler', () => {
     await eventHandler(payload);
     validateCorrectHandler(handleHelp);
     expect(handleHelp).toBeCalled();
+  });
+
+  it('processes version messages', async () => {
+    const payload = {
+      event: {
+        type: 'app_mention',
+        text: 'prefix version suffix',
+      },
+    };
+    await eventHandler(payload);
+    validateCorrectHandler(handleVersion);
+    expect(handleVersion).toBeCalled();
   });
 
   it('processes member_joined_channel', async () => {
