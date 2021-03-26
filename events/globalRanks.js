@@ -4,7 +4,7 @@ import { getChannelMetrics, updateChannelMetrics } from '../libs/dynamodb';
 
 export default async function handleGlobalRanks(payload) {
   const [channelMetrics, userMap] = await Promise.all([
-    getChannelUpdatedMetrics(),
+    getChannelMetrics(),
     getUserMap(),
   ]);
   const [{ channelMap, globalStats }] = await Promise.all([getGlobalStats()]);
