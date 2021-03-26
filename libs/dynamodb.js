@@ -30,7 +30,7 @@ async function updateSingleChannelMetrics(channelId) {
     },
   };
 
-  await DynamoDB.put(params);
+  await wrapper.put(params);
 }
 
 export async function updateChannelMetrics(channelMap, channelMetrics) {
