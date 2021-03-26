@@ -41,7 +41,6 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - 'Fn::GetAtt': [MessageCountsTable, Arn]
         - 'Fn::GetAtt': [ChannelUpdatesTable, Arn]
 
 resources:
