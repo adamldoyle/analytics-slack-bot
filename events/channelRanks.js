@@ -1,10 +1,15 @@
-import SlackClient, { getUserMap } from '../libs/slack';
+import { getUserMap, sendMessage } from '../libs/slack';
 import { getChannelStats, buildStatRanks } from '../libs/ranks';
 
 export default async function handleChannelRanks(payload) {
-  const [channelStats, userMap] = await Promise.all([
-    getChannelStats(payload.event.channel),
+  await sendMessage({
+    text: 'Calculating, please hold...',
+    channel: payload.event.channel,
+  });
+
+  const [userMap, channelStats] = await Promise.all([
     getUserMap(),
+    getChannelStats(payload.event.channel),
   ]);
   const ranks = buildStatRanks(channelStats, userMap);
   const rankOutput = ranks
@@ -15,7 +20,8 @@ export default async function handleChannelRanks(payload) {
         } messages)`,
     )
     .join('\n');
-  await SlackClient.chat.postMessage({
+
+  await sendMessage({
     text: `Channel ranks:\n\n${rankOutput}`,
     channel: payload.event.channel,
   });

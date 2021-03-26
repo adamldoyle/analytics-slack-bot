@@ -1,0 +1,27 @@
+Resources:
+  MessageCountsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.messageCountsTableName}
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: channelId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: channelId
+          KeyType: HASH
+        - AttributeName: userId
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+  ChannelUpdatesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.channelUpdatesTableName}
+      AttributeDefinitions:
+        - AttributeName: channelId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: channelId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST

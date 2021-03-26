@@ -5,7 +5,7 @@ import eventHandler from './events';
 export const main = handler(async (event, context) => {
   const payload = JSON.parse(event.body);
 
-  if (!verifyRequest(event)) {
+  if (!process.env.IS_LOCAL && !verifyRequest(event)) {
     throw new Error('Invalid request');
   }
 

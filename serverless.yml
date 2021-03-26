@@ -9,6 +9,8 @@ plugins:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  messageCountsTableName: ${self:custom.stage}-message-counts
+  channelUpdatesTableName: ${self:custom.stage}-channel-updates
 
 lambdaPolicyXRay:
   Effect: Allow
@@ -22,12 +24,30 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+  timeout: 60
   tracing:
     apiGateway: true
     lambda: true
+  environment:
+    messageCountsTableName: ${self:custom.messageCountsTableName}
+    channelUpdatesTableName: ${self:custom.channelUpdatesTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - 'Fn::GetAtt': [MessageCountsTable, Arn]
+        - 'Fn::GetAtt': [ChannelUpdatesTable, Arn]
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
+  - ${file(resources/dynamodb-table.yml)}
 
 functions:
   message:
