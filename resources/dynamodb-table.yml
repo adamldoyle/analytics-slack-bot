@@ -12,7 +12,7 @@ Resources:
         - AttributeName: userId
           KeyType: HASH
         - AttributeName: channelId
-          KeyType: HASH
+          KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
   ChannelUpdatesTable:
     Type: AWS::DynamoDB::Table
