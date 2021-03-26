@@ -39,7 +39,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - 'Fn::GetAtt': [NotesTable, Arn]
+        - 'Fn::GetAtt': [MessageCountsTable, Arn]
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
