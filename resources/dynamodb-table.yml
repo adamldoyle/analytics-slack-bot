@@ -6,7 +6,22 @@ Resources:
       AttributeDefinitions:
         - AttributeName: userId
           AttributeType: S
+        - AttributeName: channelId
+          AttributeType: S
       KeySchema:
         - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: channelId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  ChannelUpdatesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.channelUpdatesTableName}
+      AttributeDefinitions:
+        - AttributeName: channelId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: channelId
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST

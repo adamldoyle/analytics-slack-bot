@@ -1,9 +1,7 @@
 import { WebClient } from '@slack/web-api';
 import { verifyRequestSignature } from '@slack/events-api';
 
-const token =
-  process.env.SLACK_TOKEN ||
-  'xoxb-1264925304405-1341442215382-FvPNqoNE14JJCAPa46PcEbHY';
+const token = process.env.SLACK_TOKEN;
 const SlackClient = new WebClient(token);
 export default SlackClient;
 
@@ -22,7 +20,9 @@ export function verifyRequest(event) {
 
 export async function getChannelMap() {
   // Using WebClient explicitly here instead of SlackToken to aid with testing
-  const response = await new WebClient(token).users.conversations({ types: 'public_channel,private_channel' });
+  const response = await new WebClient(token).users.conversations({
+    types: 'public_channel,private_channel',
+  });
   return response.channels.reduce((acc, channel) => {
     acc[channel.id] = channel.name;
     return acc;
