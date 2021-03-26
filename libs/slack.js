@@ -29,6 +29,14 @@ export async function getChannelMap() {
   }, {});
 }
 
+export async function getAllChannelsMap() {
+  const response = await new WebClient(token).conversations.list();
+  return response.channels.reduce((acc, channel) => {
+    acc[channel.id] = channel.name;
+    return acc;
+  }, {});
+}
+
 export async function getUserMap() {
   const response = await new WebClient(token).users.list();
   return response.members.reduce((acc, user) => {
@@ -42,4 +50,13 @@ export async function getChannelMembers(channelId) {
     channel: channelId,
   });
   return response.members;
+}
+
+export async function sendMessage(payload) {
+  if (!process.env.IS_LOCAL) {
+    return new WebClient(token).chat.postMessage(payload);
+  } else {
+    console.log('Sending slack message (skipped due to local execution):');
+    console.log(payload);
+  }
 }

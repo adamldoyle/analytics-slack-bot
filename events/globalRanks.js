@@ -1,13 +1,11 @@
-import SlackClient, { getUserMap } from '../libs/slack';
+import { getUserMap, sendMessage } from '../libs/slack';
 import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 
 export default async function handleGlobalRanks(payload) {
-  if (!process.env.IS_LOCAL) {
-    await SlackClient.chat.postMessage({
-      text: 'Calculating, please hold...',
-      channel: payload.event.channel,
-    });
-  }
+  await sendMessage({
+    text: 'Calculating, please hold...',
+    channel: payload.event.channel,
+  });
 
   const [userMap, { channelMap, globalStats }] = await Promise.all([
     getUserMap(),
@@ -22,15 +20,11 @@ export default async function handleGlobalRanks(payload) {
         } messages)`,
     )
     .join('\n');
-  const channelOutput = Object.values(channelMap).join(', ');
-  if (!process.env.IS_LOCAL) {
-    await SlackClient.chat.postMessage({
-      text: `Global ranks:\n\n${rankOutput}\n\nChannels monitored: ${channelOutput}`,
-      channel: payload.event.channel,
-    });
-  } else {
-    console.log(
-      `Global ranks:\n\n${rankOutput}\n\nChannels monitored: ${channelOutput}`,
-    );
-  }
+  const channelOutput = Object.values(channelMap)
+    .sort((a, b) => a.localeCompare(b))
+    .join(', ');
+  await sendMessage({
+    text: `Global ranks:\n\n${rankOutput}\n\nChannels monitored: ${channelOutput}`,
+    channel: payload.event.channel,
+  });
 }

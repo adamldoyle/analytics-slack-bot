@@ -1,7 +1,12 @@
 import channelRanksHandler from './channelRanks';
 import globalRanksHandler from './globalRanks';
 import channelBouncerHandler from './channelBouncer';
-import { handleSource, handleHelp, handleVersion } from './help';
+import {
+  handleSource,
+  handleHelp,
+  handleVersion,
+  handleUnmonitored,
+} from './help';
 import mentionMessages from './mentionMessages';
 
 export default async function handleEvent(payload) {
@@ -19,6 +24,8 @@ export default async function handleEvent(payload) {
       return channelBouncerHandler(payload);
     } else if (text.includes(mentionMessages.VERSION)) {
       return handleVersion(payload);
+    } else if (text.includes(mentionMessages.UNMONITORED)) {
+      return handleUnmonitored(payload);
     }
   }
   if (payload.event.type === 'member_joined_channel') {
