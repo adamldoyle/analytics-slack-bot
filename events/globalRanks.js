@@ -1,14 +1,9 @@
 import SlackClient, { getUserMap } from '../libs/slack';
 import { getGlobalStats, buildStatRanks } from '../libs/ranks';
-import { getChannelMetrics, updateChannelMetrics } from '../libs/dynamodb';
 
 export default async function handleGlobalRanks(payload) {
-  const [channelMetrics, userMap] = await Promise.all([
-    getChannelMetrics(),
-    getUserMap(),
-  ]);
+  const [userMap] = await Promise.all([getUserMap()]);
   const [{ channelMap, globalStats }] = await Promise.all([getGlobalStats()]);
-  await updateChannelMetrics(channelMap, channelMetrics);
   const ranks = buildStatRanks(globalStats, userMap);
   const rankOutput = ranks
     .map(

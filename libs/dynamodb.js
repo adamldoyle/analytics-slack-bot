@@ -9,35 +9,60 @@ const wrapper = {
   scan: (params) => client().scan(params).promise(),
   update: (params) => client().update(params).promise(),
   delete: (params) => client().delete(params).promise(),
+  transactGet: (params) => client().transactGet(params).promise(),
+  transactWrite: (params) => client().transactWrite(params).promise(),
 };
 
-export async function getChannelMetrics() {
+export async function getChannelMetrics(channelId) {
   const params = {
-    TableName: process.env.channelUpdatesTableName,
+    TransactItems: [
+      {
+        Get: {
+          TableName: process.env.channelUpdatesTableName,
+          Key: {
+            channelId,
+          },
+        },
+      },
+    ],
   };
 
-  const result = await wrapper.scan(params);
-  return result.Items;
+  const result = await wrapper.transactGet(params);
+  return result.Responses[0].Item;
 }
 
-async function updateSingleChannelMetrics(channelId) {
+/**
+ * Updates timestamp for channel under specific conditions, to prevent race conditions:
+ * - If previousTs is null, no matching row must exist first
+ * - If previousTs is a timestamp, a matching row must exist with that timestamp
+ * @param {string} channelId Slack channel id to record timestamp for
+ * @param {number} currentTs New timestamp to use
+ * @param {number} previousTs Previous timestamp, null if no timestamp
+ */
+export async function updateChannelMetrics(channelId, currentTs, previousTs) {
   const params = {
-    TableName: process.env.channelUpdatesTableName,
-    Item: {
-      channelId,
-      updatedAt: Date.now(),
-    },
+    TransactItems: [
+      {
+        Put: {
+          TableName: process.env.channelUpdatesTableName,
+          ConditionExpression: previousTs
+            ? 'updatedAt = :previousTs'
+            : 'attribute_not_exists(channelId)',
+          Item: {
+            channelId,
+            updatedAt: currentTs,
+          },
+          ExpressionAttributeValues: previousTs
+            ? {
+                ':previousTs': previousTs,
+              }
+            : undefined,
+        },
+      },
+    ],
   };
 
-  await wrapper.put(params);
-}
-
-export async function updateChannelMetrics(channelMap, channelMetrics) {
-  await Promise.all(
-    Object.keys(channelMap).map((channelId) =>
-      updateSingleChannelMetrics(channelId),
-    ),
-  );
+  await wrapper.transactWrite(params);
 }
 
 export default wrapper;
