@@ -23,7 +23,7 @@ export async function getChannelMetrics() {
 async function updateSingleChannelMetrics(channelId) {
   const params = {
     TableName: process.env.channelUpdatesTableName,
-    ConditionExpression: `updatedAt = :previousUpdatedAt`
+    ConditionExpression: `updatedAt = :previousUpdatedAt`,
     Item: {
       channelId,
       updatedAt: Date.now(),
@@ -34,7 +34,11 @@ async function updateSingleChannelMetrics(channelId) {
 }
 
 export async function updateChannelMetrics(channelMap, channelMetrics) {
-  await Promise.all(Object.keys(channelMap).map((channelId) => updateSingleChannelMetrics(channelId)));
+  await Promise.all(
+    Object.keys(channelMap).map((channelId) =>
+      updateSingleChannelMetrics(channelId),
+    ),
+  );
 }
 
 export default wrapper;
