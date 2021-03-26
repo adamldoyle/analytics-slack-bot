@@ -2,6 +2,13 @@ import SlackClient, { getUserMap } from '../libs/slack';
 import { getChannelStats, buildStatRanks } from '../libs/ranks';
 
 export default async function handleChannelRanks(payload) {
+  if (!process.env.IS_LOCAL) {
+    await SlackClient.chat.postMessage({
+      text: 'Calculating, please hold...',
+      channel: payload.event.channel,
+    });
+  }
+
   const [userMap, channelStats] = await Promise.all([
     getUserMap(),
     getChannelStats(payload.event.channel),

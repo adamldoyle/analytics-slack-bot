@@ -2,6 +2,13 @@ import SlackClient, { getUserMap } from '../libs/slack';
 import { getGlobalStats, buildStatRanks } from '../libs/ranks';
 
 export default async function handleGlobalRanks(payload) {
+  if (!process.env.IS_LOCAL) {
+    await SlackClient.chat.postMessage({
+      text: 'Calculating, please hold...',
+      channel: payload.event.channel,
+    });
+  }
+
   const [userMap, { channelMap, globalStats }] = await Promise.all([
     getUserMap(),
     getGlobalStats(),
