@@ -23,7 +23,6 @@ export async function getChannelMetrics() {
 async function updateSingleChannelMetrics(channelId) {
   const params = {
     TableName: process.env.channelUpdatesTableName,
-    ConditionExpression: `updatedAt = :previousUpdatedAt`,
     Item: {
       channelId,
       updatedAt: Date.now(),
