@@ -9,6 +9,7 @@ plugins:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  messageCountsTableName: ${self:custom.stage}-message-counts
 
 lambdaPolicyXRay:
   Effect: Allow
@@ -25,9 +26,24 @@ provider:
   tracing:
     apiGateway: true
     lambda: true
+  environment:
+    tableName: ${self:custom.messageCountsTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - 'Fn::GetAtt': [NotesTable, Arn]
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
+  - ${file(resources/dynamodb-table.yml)}
 
 functions:
   message:
