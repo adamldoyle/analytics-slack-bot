@@ -1,13 +1,20 @@
 import SlackClient, { getChannelMap } from './slack';
+import { getChannelMetrics, updateChannelMetrics } from './dynamodb';
 
 export async function getChannelStats(channelId) {
+  const currentTs = Date.now() / 1000;
+  const previousChannelMetrics = await getChannelMetrics(channelId);
+
   let messages = [];
   for await (const response of SlackClient.paginate('conversations.history', {
     channel: channelId,
+    oldest: previousChannelMetrics.lastUpdatedAt,
+    latest: currentTs,
   })) {
     messages = messages.concat(response.messages);
   }
-  const channelCounts = messages.reduce((acc, message) => {
+
+  const newCounts = messages.reduce((acc, message) => {
     if (message && message.user && message.subtype !== 'thread_broadcast') {
       if (!acc[message.user]) {
         acc[message.user] = 0;
@@ -16,6 +23,13 @@ export async function getChannelStats(channelId) {
     }
     return acc;
   }, {});
+
+  const channelCounts = await updateChannelMetrics(
+    channelId,
+    previousChannelMetrics,
+    newCounts,
+    currentTs,
+  );
 
   return channelCounts;
 }

@@ -9,60 +9,83 @@ const wrapper = {
   scan: (params) => client().scan(params).promise(),
   update: (params) => client().update(params).promise(),
   delete: (params) => client().delete(params).promise(),
-  transactGet: (params) => client().transactGet(params).promise(),
   transactWrite: (params) => client().transactWrite(params).promise(),
 };
 
 export async function getChannelMetrics(channelId) {
-  const params = {
-    TransactItems: [
-      {
-        Get: {
-          TableName: process.env.channelUpdatesTableName,
-          Key: {
-            channelId,
-          },
-        },
-      },
-    ],
+  const channelParams = {
+    TableName: process.env.channelUpdatesTableName,
+    Key: {
+      channelId,
+    },
   };
 
-  const result = await wrapper.transactGet(params);
-  return result.Responses[0].Item;
+  const userParams = {
+    TableName: process.env.messageCountsTableName,
+    KeyConditionExpression: 'channelId = :channelId',
+    ExpressionAttributeValues: {
+      ':channelId': channelId,
+    },
+  };
+
+  const [channelResult, userResult] = await Promise.all([
+    wrapper.get(channelParams),
+    wrapper.query(userParams),
+  ]);
+
+  return {
+    lastUpdatedAt: channelResult.Item?.updatedAt ?? 0,
+    userMetrics: userResult.Items,
+  };
 }
 
-/**
- * Updates timestamp for channel under specific conditions, to prevent race conditions:
- * - If previousTs is null, no matching row must exist first
- * - If previousTs is a timestamp, a matching row must exist with that timestamp
- * @param {string} channelId Slack channel id to record timestamp for
- * @param {number} currentTs New timestamp to use
- * @param {number} previousTs Previous timestamp, null if no timestamp
- */
-export async function updateChannelMetrics(channelId, currentTs, previousTs) {
+export async function updateChannelMetrics(
+  channelId,
+  previousMetrics,
+  newStats,
+  currentTs,
+) {
+  const messagesByUser = previousMetrics.userMetrics.reduce((acc, userItem) => {
+    acc[userItem.userId] = (acc[userItem.userId] ?? 0) + userItem.messages;
+    return acc;
+  }, newStats);
+
   const params = {
     TransactItems: [
       {
         Put: {
           TableName: process.env.channelUpdatesTableName,
-          ConditionExpression: previousTs
+          ConditionExpression: previousMetrics.lastUpdatedAt
             ? 'updatedAt = :previousTs'
             : 'attribute_not_exists(channelId)',
           Item: {
             channelId,
             updatedAt: currentTs,
           },
-          ExpressionAttributeValues: previousTs
+          ExpressionAttributeValues: previousMetrics.lastUpdatedAt
             ? {
-                ':previousTs': previousTs,
+                ':previousTs': previousMetrics.lastUpdatedAt,
               }
             : undefined,
         },
       },
+      ...Object.keys(messagesByUser).map((userId) => ({
+        Put: {
+          TableName: process.env.messageCountsTableName,
+          Item: {
+            channelId,
+            userId,
+            messages: messagesByUser[userId],
+            updatedAt: currentTs,
+          },
+        },
+      })),
     ],
   };
 
   await wrapper.transactWrite(params);
+
+  return messagesByUser;
 }
 
 export default wrapper;
