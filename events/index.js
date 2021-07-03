@@ -13,7 +13,8 @@ import mentionMessages from './mentionMessages';
 const GENDER_WORDS = ['girl', 'woman', 'she', 'her', 'boy', 'man', 'he', 'him', 'robot'];
 
 function genderMatch(text) {
-  return GENDER_WORDS.find((word) => text.toLowerCase().includes(word));
+  const textWords = text.toLowerCase().split(' ');
+  return GENDER_WORDS.find((word) => textWords.includes(word));
 }
 
 export default async function handleEvent(payload) {
