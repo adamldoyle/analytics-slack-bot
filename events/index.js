@@ -6,8 +6,15 @@ import {
   handleHelp,
   handleVersion,
   handleUnmonitored,
+  handleGender,
 } from './help';
 import mentionMessages from './mentionMessages';
+
+const GENDER_WORDS = ['girl', 'woman', 'she', 'her', 'boy', 'man', 'he', 'him', 'robot'];
+
+function genderMatch(text) {
+  return GENDER_WORDS.find((word) => text.toLowerCase().includes(word));
+}
 
 export default async function handleEvent(payload) {
   if (payload.event.type === 'app_mention') {
@@ -26,6 +33,8 @@ export default async function handleEvent(payload) {
       return handleVersion(payload);
     } else if (text.includes(mentionMessages.UNMONITORED)) {
       return handleUnmonitored(payload);
+    } else if (genderMatch(text)) {
+      return handleGender(payload, genderMatch(text));
     }
   }
   if (payload.event.type === 'member_joined_channel') {

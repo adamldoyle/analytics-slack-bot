@@ -42,3 +42,10 @@ export async function handleUnmonitored(payload) {
     channel: payload.event.channel,
   });
 }
+
+export async function handleGender(payload, match) {
+  await sendMessage({
+    text: `Not a ${match}`,
+    channel: payload.event.channel,
+  });
+}
